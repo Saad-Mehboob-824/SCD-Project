@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: scd-project
   labels:
     app: mern-app
     tier: frontend
@@ -19,8 +20,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: subhan0072/my-node-frontend:latest
-        imagePullPolicy: Never
+        image: i222577/my-node-frontend:latest  # Updated from subhan0072
         ports:
         - containerPort: 5173
         env:
@@ -31,6 +31,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  namespace: scd-project
   labels:
     app: mern-app
     tier: backend
@@ -48,8 +49,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: subhan0072/my-node-backend:latest
-        imagePullPolicy: Never
+        image: i222577/my-node-backend:latest  # Updated from subhan0072
         ports:
         - containerPort: 5000
         env:
@@ -60,6 +60,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongodb
+  namespace: scd-project
   labels:
     app: mern-app
     tier: database
@@ -92,6 +93,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mongodb-pvc
+  namespace: scd-project
 spec:
   accessModes:
     - ReadWriteOnce
