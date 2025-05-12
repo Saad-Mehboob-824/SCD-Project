@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: i222577/my-node-frontend:latest  # Updated from subhan0072
+        image: i222577/my-node-frontend:latest
         ports:
         - containerPort: 5173
         env:
@@ -49,12 +49,17 @@ spec:
     spec:
       containers:
       - name: backend
-        image: i222577/my-node-backend:latest  # Updated from subhan0072
+        image: i222577/my-node-backend:latest
         ports:
         - containerPort: 5000
         env:
         - name: MONGODB_URI
           value: "mongodb://mongodb-service:27017/mernapp"
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -78,25 +83,14 @@ spec:
     spec:
       containers:
       - name: mongodb
-        image: mongo:latest
+        image: mongo:4.4  # Changed to 4.4 to avoid AVX requirement
+        command: ["mongod", "--bind_ip_all"]
         ports:
         - containerPort: 27017
-        volumeMounts:
-        - name: mongodb-data
-          mountPath: /data/db
-      volumes:
-      - name: mongodb-data
-        persistentVolumeClaim:
-          claimName: mongodb-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mongodb-pvc
-  namespace: scd-project
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
