@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: mern-app
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mern-app
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: mern-app
+        tier: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: subhan0072/my-node-frontend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5173
+        env:
+        - name: VITE_API_URL
+          value: "http://backend-service:5000/api"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: mern-app
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mern-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: mern-app
+        tier: backend
+    spec:
+      containers:
+      - name: backend
+        image: subhan0072/my-node-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MONGODB_URI
+          value: "mongodb://mongodb-service:27017/mernapp"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  labels:
+    app: mern-app
+    tier: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mern-app
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: mern-app
+        tier: database
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+      volumes:
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
