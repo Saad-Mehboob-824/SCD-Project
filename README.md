@@ -1,2 +1,2 @@
 # SCD-Project
-adding to readme    nnikjnhi WS
+adding to readme    adding
